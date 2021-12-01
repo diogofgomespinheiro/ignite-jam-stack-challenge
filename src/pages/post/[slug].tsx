@@ -6,6 +6,7 @@ import Image from 'next/image';
 import Prismic from '@prismicio/client';
 import { RichText, RichTextBlock } from 'prismic-reactjs';
 
+import Comments from '../../components/Comments';
 import TextIcon from '../../components/TextIcon';
 import PreviewLink from '../../components/PreviewLink';
 import { getPrismicClient } from '../../services';
@@ -81,8 +82,9 @@ export default function Post({ post, preview }: PostProps): ReactElement {
             </div>
           </article>
         </div>
+        <Comments />
+        {preview && <PreviewLink />}
       </main>
-      {preview && <PreviewLink />}
     </>
   );
 }
