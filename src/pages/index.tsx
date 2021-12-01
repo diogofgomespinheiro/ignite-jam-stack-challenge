@@ -6,6 +6,7 @@ import Prismic from '@prismicio/client';
 import ApiSearchResponse from '@prismicio/client/types/ApiSearchResponse';
 
 import TextIcon from '../components/TextIcon';
+import PreviewLink from '../components/PreviewLink';
 import { getPrismicClient, fetcher } from '../services';
 import { formatDate } from '../utils';
 
@@ -28,9 +29,13 @@ interface PostPagination {
 
 interface HomeProps {
   postsPagination: PostPagination;
+  preview?: boolean;
 }
 
-export default function Home({ postsPagination }: HomeProps): ReactElement {
+export default function Home({
+  postsPagination,
+  preview,
+}: HomeProps): ReactElement {
   const [{ next_page, results }, setPostsPagination] =
     useState(postsPagination);
 
@@ -86,15 +91,20 @@ export default function Home({ postsPagination }: HomeProps): ReactElement {
           )}
         </div>
       </main>
+      {preview && <PreviewLink />}
     </>
   );
 }
 
-export const getStaticProps: GetStaticProps<HomeProps> = async () => {
+export const getStaticProps: GetStaticProps<HomeProps> = async ({
+  preview = false,
+  previewData = {},
+}) => {
   const { results, next_page } = await getPrismicClient().query(
     Prismic.predicates.at('document.type', 'posts'),
     {
       pageSize: 20,
+      ref: previewData.ref ?? null,
     }
   );
 
@@ -116,6 +126,7 @@ export const getStaticProps: GetStaticProps<HomeProps> = async () => {
         next_page,
         results: mappedResults,
       },
+      preview,
     },
   };
 };

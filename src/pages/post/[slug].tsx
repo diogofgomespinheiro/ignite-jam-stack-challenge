@@ -7,6 +7,7 @@ import Prismic from '@prismicio/client';
 import { RichText, RichTextBlock } from 'prismic-reactjs';
 
 import TextIcon from '../../components/TextIcon';
+import PreviewLink from '../../components/PreviewLink';
 import { getPrismicClient } from '../../services';
 import { formatDate, calculateEstimatedReadingTime } from '../../utils';
 
@@ -29,9 +30,10 @@ interface Post {
 
 interface PostProps {
   post: Post;
+  preview?: boolean;
 }
 
-export default function Post({ post }: PostProps): ReactElement {
+export default function Post({ post, preview }: PostProps): ReactElement {
   const router = useRouter();
   const { data, first_publication_date } = post;
   const { banner, title, author, content } = data;
@@ -76,6 +78,7 @@ export default function Post({ post }: PostProps): ReactElement {
           </article>
         </div>
       </main>
+      {preview && <PreviewLink />}
     </>
   );
 }
@@ -101,13 +104,17 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps<PostProps> = async context => {
   const { slug } = context.params;
+  const { preview = false, previewData = {} } = context;
 
   const prismic = getPrismicClient();
-  const post = await prismic.getByUID('posts', String(slug), {});
+  const post = await prismic.getByUID('posts', String(slug), {
+    ref: previewData.ref ?? null,
+  });
 
   return {
     props: {
       post,
+      preview,
     },
     revalidate: 60 * 60 * 24 * 3, // 3 days
   };
