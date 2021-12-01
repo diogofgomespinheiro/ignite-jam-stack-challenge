@@ -14,7 +14,8 @@ import { formatDate, calculateEstimatedReadingTime } from '../../utils';
 import styles from './post.module.scss';
 
 interface Post {
-  first_publication_date: string | null;
+  first_publication_date?: string;
+  last_publication_date?: string;
   data: {
     title: string;
     banner: {
@@ -35,7 +36,7 @@ interface PostProps {
 
 export default function Post({ post, preview }: PostProps): ReactElement {
   const router = useRouter();
-  const { data, first_publication_date } = post;
+  const { data, first_publication_date, last_publication_date } = post;
   const { banner, title, author, content } = data;
   const estimatedReadingTime = calculateEstimatedReadingTime(content);
 
@@ -66,6 +67,9 @@ export default function Post({ post, preview }: PostProps): ReactElement {
                 <TextIcon icon="user" text={author} />
                 <TextIcon icon="clock" text={`${estimatedReadingTime} min`} />
               </div>
+              <span className={styles.editedTime}>
+                * editado a {formatDate(last_publication_date, 'PPPp')}
+              </span>
             </div>
             <div className={styles.postBody}>
               {content.map(item => (
