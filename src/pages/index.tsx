@@ -2,12 +2,11 @@ import { ReactElement, useState } from 'react';
 import { GetStaticProps } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
-import Prismic from '@prismicio/client';
 import ApiSearchResponse from '@prismicio/client/types/ApiSearchResponse';
 
 import TextIcon from '../components/TextIcon';
 import PreviewLink from '../components/PreviewLink';
-import { getPrismicClient, fetcher } from '../services';
+import { PostsService, fetcher } from '../services';
 import { formatDate } from '../utils';
 
 import styles from './home.module.scss';
@@ -100,13 +99,10 @@ export const getStaticProps: GetStaticProps<HomeProps> = async ({
   preview = false,
   previewData = {},
 }) => {
-  const { results, next_page } = await getPrismicClient().query(
-    Prismic.predicates.at('document.type', 'posts'),
-    {
-      pageSize: 20,
-      ref: previewData.ref ?? null,
-    }
-  );
+  const { results, next_page } = await PostsService.findAll({
+    pageSize: 20,
+    ref: previewData.ref ?? null,
+  });
 
   const mappedResults: Post[] = results.map<Post>(
     ({ uid, first_publication_date, data }) => ({
